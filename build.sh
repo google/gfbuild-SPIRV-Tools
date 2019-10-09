@@ -18,19 +18,46 @@ set -x
 set -e
 set -u
 
-ninja --version || true
-cmake --version || true
-python --version || true
-python3 --version || true
-github-release || true
-gcc --version || true
-clang --version || true
-sha1sum --version || true
-curl --version || true
-7z || true
-wget --version || true
-tar || true
-unzip || true
-brew || true
-sed || true
 
+echo "$(uname)"
+
+case "$(uname)" in
+"Linux")
+  GITHUB_RELEASE_TOOL_ARCH="linux_amd64"
+  NINJA_OS="linux"
+  ;;
+
+"Darwin")
+  GITHUB_RELEASE_TOOL_ARCH="darwin_amd64"
+  NINJA_OS="mac"
+  ;;
+
+"MSYS"*)
+  GITHUB_RELEASE_TOOL_ARCH="windows_amd64"
+  NINJA_OS="win"
+  ;;
+
+*)
+  echo "Unknown OS"
+  exit 1
+  ;;
+esac
+
+pushd ~
+
+GITHUB_RELEASE_TOOL_USER="c4milo"
+GITHUB_RELEASE_TOOL_VERSION="v1.1.0"
+curl -fsSL -o github-release.tar.gz "https://github.com/${GITHUB_RELEASE_TOOL_USER}/github-release/releases/download/${GITHUB_RELEASE_TOOL_VERSION}/github-release_${GITHUB_RELEASE_TOOL_VERSION}_${GITHUB_RELEASE_TOOL_ARCH}.tar.gz"
+tar xf github-release.tar.gz
+
+curl -fsSL -o ninja-build.zip "https://github.com/ninja-build/ninja/releases/download/v1.9.0/ninja-${NINJA_OS}.zip"
+unzip ninja-build.zip
+
+ls
+
+export PATH="~:$PATH"
+
+ninja
+github-release
+
+popd
