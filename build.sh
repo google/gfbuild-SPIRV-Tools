@@ -18,6 +18,10 @@ set -x
 set -e
 set -u
 
+env
+
+exit 0
+
 WORK="$(pwd)"
 
 uname
@@ -109,7 +113,7 @@ CLASSIFIER="${BUILD_PLATFORM}_${CMAKE_BUILD_TYPE}"
 INSTALL_DIR="${ARTIFACT}-${VERSION}-${CLASSIFIER}"
 
 
-BUILD_DIR="${INSTALL_DIR}-build"
+BUILD_DIR="build_${CMAKE_BUILD_TYPE}"
 
 mkdir -p "${BUILD_DIR}"
 pushd "${BUILD_DIR}"
