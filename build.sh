@@ -18,10 +18,6 @@ set -x
 set -e
 set -u
 
-env
-
-exit 0
-
 WORK="$(pwd)"
 
 uname
@@ -32,6 +28,7 @@ case "$(uname)" in
   NINJA_OS="linux"
   BUILD_PLATFORM="Linux_x64"
   PYTHON="python3"
+  CMAKE_COMPILER_OPTIONS=()
   ;;
 
 "Darwin")
@@ -39,6 +36,7 @@ case "$(uname)" in
   NINJA_OS="mac"
   BUILD_PLATFORM="Mac_x64"
   PYTHON="python3"
+  CMAKE_COMPILER_OPTIONS=()
   brew install md5sha1sum
   ;;
 
@@ -47,6 +45,7 @@ case "$(uname)" in
   NINJA_OS="win"
   BUILD_PLATFORM="Windows_x64"
   PYTHON="python"
+  CMAKE_COMPILER_OPTIONS=("-DCMAKE_C_COMPILER=cl.exe" "-DCMAKE_CXX_COMPILER=cl.exe")
   ;;
 
 *)
@@ -96,7 +95,7 @@ pushd external/protobuf
 git checkout v3.7.1
 popd
 
-CMAKE_OPTIONS="-DSPIRV_BUILD_FUZZER=ON"
+CMAKE_OPTIONS=("-DSPIRV_BUILD_FUZZER=ON")
 GITHUB_USER="google"
 GITHUB_REPO="gfbuild-SPIRV-Tools"
 
@@ -117,7 +116,8 @@ BUILD_DIR="build_${CMAKE_BUILD_TYPE}"
 
 mkdir -p "${BUILD_DIR}"
 pushd "${BUILD_DIR}"
-cmake -G "${CMAKE_GENERATOR}" .. "-DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}" -DCMAKE_OSX_ARCHITECTURES=x86_64 ${CMAKE_OPTIONS}
+
+cmake -G "${CMAKE_GENERATOR}" .. "-DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}" -DCMAKE_OSX_ARCHITECTURES=x86_64 "${CMAKE_OPTIONS[@]}" "${CMAKE_COMPILER_OPTIONS[@]}"
 cmake --build . --config "${CMAKE_BUILD_TYPE}"
 cmake "-DCMAKE_INSTALL_PREFIX=../${INSTALL_DIR}" "-DBUILD_TYPE=${CMAKE_BUILD_TYPE}" -P cmake_install.cmake
 popd
