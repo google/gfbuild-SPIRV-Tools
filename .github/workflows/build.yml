@@ -30,7 +30,9 @@ jobs:
     env:
       CONFIG: ${{ matrix.config }}
     steps:
-      - uses: actions/checkout@master
       - name: build_step
-        run: ./build.sh
+        run: |
+          git fetch
+          git checkout $GITHUB_SHA
+          ./build.sh
         shell: bash
