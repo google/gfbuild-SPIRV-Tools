@@ -18,6 +18,7 @@ set -x
 set -e
 set -u
 
+WORK="$(pwd)"
 
 uname
 
@@ -70,9 +71,10 @@ CLONE_DIR="SPIRV-Tools"
 
 git clone https://github.com/KhronosGroup/SPIRV-Tools.git "${CLONE_DIR}"
 cd "${CLONE_DIR}"
-git checkout "$(cat ../COMMIT_ID)"
+git checkout "$(cat "${WORK}/COMMIT_ID")"
 
-HEADERS_VERSION="$(${PYTHON} get_headers_version.py < DEPS)"
+# Get headers version from the DEPS file.
+HEADERS_VERSION="$(${PYTHON} "${WORK}/get_headers_version.py" < DEPS)"
 
 git clone https://github.com/KhronosGroup/SPIRV-Headers.git external/spirv-headers
 pushd external/spirv-headers
