@@ -20,9 +20,9 @@ jobs:
     strategy:
       matrix:
         os:
-#          - ubuntu-16.04
+          - ubuntu-16.04
           - windows-2016
-#          - macOS-10.14
+          - macOS-10.14
         config:
           - Debug
           # - Release
@@ -43,10 +43,8 @@ jobs:
           !startsWith(matrix.os, 'windows')
       - name: build_step_windows
         run: |
-          pushd "C:\Program Files (x86)\Microsoft Visual Studio\2017\Enterprise"
-          dir /s /b | findstr bat
-          popd
+          call "C:\Program Files (x86)\Microsoft Visual Studio\2017\Enterprise\VC\Auxiliary\Build\vcvarsall.bat" x64
+          "C:\Program Files\Git\bin\bash.EXE" --noprofile --norc -e -o pipefail build.sh
         shell: cmd
         if: |
           startsWith(matrix.os, 'windows')
-#"C:\Program Files\Git\bin\bash.EXE" --noprofile --norc -e -o pipefail build.sh
