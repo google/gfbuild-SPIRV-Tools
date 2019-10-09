@@ -19,22 +19,25 @@ set -e
 set -u
 
 
-echo "$(uname)"
+uname
 
 case "$(uname)" in
 "Linux")
   GITHUB_RELEASE_TOOL_ARCH="linux_amd64"
   NINJA_OS="linux"
+  PYTHON="python3"
   ;;
 
 "Darwin")
   GITHUB_RELEASE_TOOL_ARCH="darwin_amd64"
   NINJA_OS="mac"
+  PYTHON="python3"
   ;;
 
 "MINGW"*)
   GITHUB_RELEASE_TOOL_ARCH="windows_amd64"
   NINJA_OS="win"
+  PYTHON="python"
   ;;
 
 *)
@@ -49,11 +52,13 @@ mkdir "${HOME}/bin"
 
 pushd "${HOME}/bin"
 
+# Install github-release.
 GITHUB_RELEASE_TOOL_USER="c4milo"
 GITHUB_RELEASE_TOOL_VERSION="v1.1.0"
 curl -fsSL -o github-release.tar.gz "https://github.com/${GITHUB_RELEASE_TOOL_USER}/github-release/releases/download/${GITHUB_RELEASE_TOOL_VERSION}/github-release_${GITHUB_RELEASE_TOOL_VERSION}_${GITHUB_RELEASE_TOOL_ARCH}.tar.gz"
 tar xf github-release.tar.gz
 
+# Install ninja.
 curl -fsSL -o ninja-build.zip "https://github.com/ninja-build/ninja/releases/download/v1.9.0/ninja-${NINJA_OS}.zip"
 unzip ninja-build.zip
 
@@ -63,19 +68,18 @@ popd
 
 CLONE_DIR="SPIRV-Tools"
 
-
 git clone https://github.com/KhronosGroup/SPIRV-Tools.git "${CLONE_DIR}"
 cd "${CLONE_DIR}"
-git checkout $(cat ../COMMIT_ID)
+git checkout "$(cat ../COMMIT_ID)"
+
+HEADERS_VERSION="$(${PYTHON} get_headers_version.py < DEPS)"
 
 git clone https://github.com/KhronosGroup/SPIRV-Headers.git external/spirv-headers
 pushd external/spirv-headers
-git checkout $(cat ../../../COMMIT_ID_HEADERS)
+git checkout "${HEADERS_VERSION}"
 popd
 
 git clone https://github.com/protocolbuffers/protobuf external/protobuf
 pushd external/protobuf
 git checkout v3.7.1
 popd
-
-
