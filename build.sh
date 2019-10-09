@@ -35,6 +35,7 @@ case "$(uname)" in
   NINJA_OS="mac"
   BUILD_PLATFORM="Mac_x64"
   PYTHON="python3"
+  brew install md5sha1sum
   ;;
 
 "MINGW"*)

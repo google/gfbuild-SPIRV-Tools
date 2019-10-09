@@ -30,9 +30,20 @@ jobs:
     env:
       CONFIG: ${{ matrix.config }}
     steps:
-      - name: build_step
+      - name: checkout
         run: |
           git clone https://github.com/${GITHUB_REPOSITORY}.git .
           git checkout $GITHUB_SHA
+        shell: bash
+      - name: build_step
+        run: |
           ./build.sh
         shell: bash
+        if: '!startsWith(matrix.os, "windows")'
+      - name: build_step
+        run: |
+          call "C:\Program Files (x86)\Microsoft Visual Studio\2017\Enterprise\Common7\tools\vcvars64.bat"
+          C:\Program Files\Git\bin\bash.EXE --noprofile --norc -e -o pipefail build.sh
+        shell: cmd
+        if: 'startsWith(matrix.os, "windows")'
+
