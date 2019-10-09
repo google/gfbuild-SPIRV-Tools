@@ -30,6 +30,7 @@ jobs:
     env:
       CONFIG: ${{ matrix.config }}
     steps:
+      - uses: actions/checkout@master
       - name: build_step
         run: ./build.sh
         shell: bash
