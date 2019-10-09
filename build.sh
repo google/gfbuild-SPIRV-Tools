@@ -32,7 +32,7 @@ case "$(uname)" in
   NINJA_OS="mac"
   ;;
 
-"MSYS"*)
+"MINGW"*)
   GITHUB_RELEASE_TOOL_ARCH="windows_amd64"
   NINJA_OS="win"
   ;;
@@ -43,7 +43,11 @@ case "$(uname)" in
   ;;
 esac
 
-pushd ~
+export PATH="${HOME}/bin:$PATH"
+
+mkdir "${HOME}/bin"
+
+pushd "${HOME}/bin"
 
 GITHUB_RELEASE_TOOL_USER="c4milo"
 GITHUB_RELEASE_TOOL_VERSION="v1.1.0"
@@ -55,9 +59,11 @@ unzip ninja-build.zip
 
 ls
 
-export PATH="~:$PATH"
-
-ninja
-github-release
-
 popd
+
+ls
+
+ninja || true
+github-release || true
+
+
