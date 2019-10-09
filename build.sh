@@ -67,11 +67,13 @@ ls
 
 popd
 
+
+COMMIT_ID="$(cat "${WORK}/COMMIT_ID")"
 CLONE_DIR="SPIRV-Tools"
 
 git clone https://github.com/KhronosGroup/SPIRV-Tools.git "${CLONE_DIR}"
 cd "${CLONE_DIR}"
-git checkout "$(cat "${WORK}/COMMIT_ID")"
+git checkout "${COMMIT_ID}"
 
 # Get headers version from the DEPS file.
 HEADERS_VERSION="$(${PYTHON} "${WORK}/get_headers_version.py" < DEPS)"
@@ -85,3 +87,85 @@ git clone https://github.com/protocolbuffers/protobuf external/protobuf
 pushd external/protobuf
 git checkout v3.7.1
 popd
+
+CMAKE_OPTIONS="-DSPIRV_BUILD_FUZZER=ON"
+GITHUB_USER="google"
+GITHUB_REPO="gfbuild-SPIRV-Tools"
+
+CMAKE_GENERATOR="Ninja"
+CMAKE_BUILD_TYPE="${CONFIG}"
+BUILD_SHA="${GITHUB_SHA}"
+GROUP_DOTS="github.${GITHUB_USER}"
+GROUP_SLASHES="github/${GITHUB_USER}"
+ARTIFACT="${GITHUB_REPO}"
+VERSION="${BUILD_SHA}"
+POM_FILE="${GITHUB_REPO}-${VERSION}.pom"
+TAG="${GROUP_SLASHES}/${ARTIFACT}/${VERSION}"
+CLASSIFIER="${BUILD_PLATFORM}_${CMAKE_BUILD_TYPE}"
+INSTALL_DIR="${ARTIFACT}-${VERSION}-${CLASSIFIER}"
+
+
+BUILD_DIR="${INSTALL_DIR}-build"
+
+mkdir -p "${BUILD_DIR}"
+pushd "${BUILD_DIR}"
+cmake -G "${CMAKE_GENERATOR}" .. "-DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}" -DCMAKE_OSX_ARCHITECTURES=x86_64 ${CMAKE_OPTIONS}
+cmake --build . --config "${CMAKE_BUILD_TYPE}"
+cmake "-DCMAKE_INSTALL_PREFIX=../${INSTALL_DIR}" "-DBUILD_TYPE=${CMAKE_BUILD_TYPE}" -P cmake_install.cmake
+popd
+
+
+for f in "${INSTALL_DIR}/bin/"*; do
+  echo "${BUILD_SHA}">"${f}.build-version"
+  cp ../COMMIT_ID "${f}.version"
+done
+
+# zip file.
+pushd "${INSTALL_DIR}"
+zip -r "../${INSTALL_DIR}.zip" ./*
+popd
+
+sha1sum "${INSTALL_DIR}.zip" >"${INSTALL_DIR}.zip.sha1"
+
+# POM file.
+sed -e "s/@GROUP@/${GROUP_DOTS}/g" -e "s/@ARTIFACT@/${ARTIFACT}/g" -e "s/@VERSION@/${VERSION}/g" "../fake_pom.xml" >"${POM_FILE}"
+
+sha1sum "${POM_FILE}" >"${POM_FILE}.sha1"
+
+DESCRIPTION="$(echo -e "Automated build for ${CLONE_DIR} version ${COMMIT_ID}.\n$(git log --graph -n 3 --abbrev-commit --pretty='format:%h - %s <%an>')")"
+
+# Only release from master branch commits.
+# shellcheck disable=SC2153
+if test "${GITHUB_REF}" != "refs/heads/master"; then
+  exit 0
+fi
+
+github-release \
+  "${GITHUB_USER}/${GITHUB_REPO}" \
+  "${TAG}" \
+  "${COMMIT_ID}" \
+  "${DESCRIPTION}" \
+  "${INSTALL_DIR}.zip"
+
+github-release \
+  "${GITHUB_USER}/${GITHUB_REPO}" \
+  "${TAG}" \
+  "${COMMIT_ID}" \
+  "${DESCRIPTION}" \
+  "${INSTALL_DIR}.zip.sha1"
+
+# Don't fail if pom cannot be uploaded, as it might already be there.
+
+github-release \
+  "${GITHUB_USER}/${GITHUB_REPO}" \
+  "${TAG}" \
+  "${COMMIT_ID}" \
+  "${DESCRIPTION}" \
+  "${POM_FILE}" || true
+
+github-release \
+  "${GITHUB_USER}/${GITHUB_REPO}" \
+  "${TAG}" \
+  "${COMMIT_ID}" \
+  "${DESCRIPTION}" \
+  "${POM_FILE}.sha1" || true
