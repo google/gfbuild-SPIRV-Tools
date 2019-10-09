@@ -25,4 +25,12 @@ python3 --version || true
 github-release || true
 gcc --version || true
 clang --version || true
+sha1sum --version || true
+curl --version || true
+7z || true
+wget --version || true
+tar || true
+unzip || true
+brew || true
+sed || true
 
