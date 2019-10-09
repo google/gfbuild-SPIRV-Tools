@@ -61,10 +61,21 @@ ls
 
 popd
 
-ls
+CLONE_DIR="SPIRV-Tools"
 
-ninja || true
-github-release || true
 
+git clone https://github.com/KhronosGroup/SPIRV-Tools.git "${CLONE_DIR}"
+cd "${CLONE_DIR}"
+git checkout $(cat ../COMMIT_ID)
+
+git clone https://github.com/KhronosGroup/SPIRV-Headers.git external/spirv-headers
+pushd external/spirv-headers
+git checkout $(cat ../../../COMMIT_ID_HEADERS)
+popd
+
+git clone https://github.com/protocolbuffers/protobuf external/protobuf
+pushd external/protobuf
+git checkout v3.7.1
+popd
 
 
