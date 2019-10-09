@@ -20,9 +20,9 @@ jobs:
     strategy:
       matrix:
         os:
-          - ubuntu-16.04
+#          - ubuntu-16.04
           - windows-2016
-          - macOS-10.14
+#          - macOS-10.14
         config:
           - Debug
           # - Release
@@ -35,16 +35,17 @@ jobs:
           git clone https://github.com/${GITHUB_REPOSITORY}.git .
           git checkout $GITHUB_SHA
         shell: bash
-      - name: build_step
+      - name: build_step_nix
         run: |
           ./build.sh
         shell: bash
         if: |
           !startsWith(matrix.os, 'windows')
-      - name: build_step
+      - name: build_step_windows
         run: |
+          dir /s /b | findstr bat
           call "C:\Program Files (x86)\Microsoft Visual Studio\2017\Enterprise\Common7\tools\vcvars64.bat"
-          C:\Program Files\Git\bin\bash.EXE --noprofile --norc -e -o pipefail build.sh
+          "C:\Program Files\Git\bin\bash.EXE" --noprofile --norc -e -o pipefail build.sh
         shell: cmd
         if: |
           startsWith(matrix.os, 'windows')
