@@ -26,18 +26,21 @@ case "$(uname)" in
 "Linux")
   GITHUB_RELEASE_TOOL_ARCH="linux_amd64"
   NINJA_OS="linux"
+  BUILD_PLATFORM="Linux_x64"
   PYTHON="python3"
   ;;
 
 "Darwin")
   GITHUB_RELEASE_TOOL_ARCH="darwin_amd64"
   NINJA_OS="mac"
+  BUILD_PLATFORM="Mac_x64"
   PYTHON="python3"
   ;;
 
 "MINGW"*)
   GITHUB_RELEASE_TOOL_ARCH="windows_amd64"
   NINJA_OS="win"
+  BUILD_PLATFORM="Windows_x64"
   PYTHON="python"
   ;;
 
@@ -76,7 +79,7 @@ cd "${CLONE_DIR}"
 git checkout "${COMMIT_ID}"
 
 # Get headers version from the DEPS file.
-HEADERS_VERSION="$(${PYTHON} "${WORK}/get_headers_version.py" < DEPS)"
+HEADERS_VERSION="$(${PYTHON} "${WORK}/get_headers_version.py" <DEPS)"
 
 git clone https://github.com/KhronosGroup/SPIRV-Headers.git external/spirv-headers
 pushd external/spirv-headers
