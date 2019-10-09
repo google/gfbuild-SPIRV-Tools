@@ -18,4 +18,11 @@ set -x
 set -e
 set -u
 
-echo hello
+ninja --version || true
+cmake --version || true
+python --version || true
+python3 --version || true
+github-release || true
+gcc --version || true
+clang --version || true
+
