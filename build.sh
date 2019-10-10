@@ -46,6 +46,7 @@ case "$(uname)" in
   BUILD_PLATFORM="Windows_x64"
   PYTHON="python"
   CMAKE_COMPILER_OPTIONS=("-DCMAKE_C_COMPILER=cl.exe" "-DCMAKE_CXX_COMPILER=cl.exe")
+  choco install zip
   ;;
 
 *)
