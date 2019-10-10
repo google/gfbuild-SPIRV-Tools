@@ -28,7 +28,7 @@ case "$(uname)" in
   NINJA_OS="linux"
   BUILD_PLATFORM="Linux_x64"
   PYTHON="python3"
-  CMAKE_COMPILER_OPTIONS=()
+  CMAKE_COMPILER_OPTIONS=("")
   ;;
 
 "Darwin")
@@ -36,7 +36,7 @@ case "$(uname)" in
   NINJA_OS="mac"
   BUILD_PLATFORM="Mac_x64"
   PYTHON="python3"
-  CMAKE_COMPILER_OPTIONS=()
+  CMAKE_COMPILER_OPTIONS=("")
   brew install md5sha1sum
   ;;
 
