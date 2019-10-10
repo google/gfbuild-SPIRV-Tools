@@ -22,13 +22,15 @@ WORK="$(pwd)"
 
 uname
 
+# Old bash versions can't expand empty arrays, so we always include at least this option.
+CMAKE_OPTIONS=("-DCMAKE_OSX_ARCHITECTURES=x86_64")
+
 case "$(uname)" in
 "Linux")
   GITHUB_RELEASE_TOOL_ARCH="linux_amd64"
   NINJA_OS="linux"
   BUILD_PLATFORM="Linux_x64"
   PYTHON="python3"
-  CMAKE_COMPILER_OPTIONS=()
   ;;
 
 "Darwin")
@@ -36,7 +38,6 @@ case "$(uname)" in
   NINJA_OS="mac"
   BUILD_PLATFORM="Mac_x64"
   PYTHON="python3"
-  CMAKE_COMPILER_OPTIONS=()
   brew install md5sha1sum
   ;;
 
@@ -45,7 +46,7 @@ case "$(uname)" in
   NINJA_OS="win"
   BUILD_PLATFORM="Windows_x64"
   PYTHON="python"
-  CMAKE_COMPILER_OPTIONS=("-DCMAKE_C_COMPILER=cl.exe" "-DCMAKE_CXX_COMPILER=cl.exe")
+  CMAKE_OPTIONS+=("-DCMAKE_C_COMPILER=cl.exe" "-DCMAKE_CXX_COMPILER=cl.exe")
   choco install zip
   ;;
 
@@ -96,7 +97,7 @@ pushd external/protobuf
 git checkout v3.7.1
 popd
 
-CMAKE_OPTIONS=("-DSPIRV_BUILD_FUZZER=ON")
+CMAKE_OPTIONS+=("-DSPIRV_BUILD_FUZZER=ON")
 GITHUB_USER="google"
 GITHUB_REPO="gfbuild-SPIRV-Tools"
 
@@ -118,7 +119,7 @@ BUILD_DIR="b_${CMAKE_BUILD_TYPE}"
 mkdir -p "${BUILD_DIR}"
 pushd "${BUILD_DIR}"
 
-cmake -G "${CMAKE_GENERATOR}" .. "-DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}" -DCMAKE_OSX_ARCHITECTURES=x86_64 "${CMAKE_OPTIONS[@]}" "${CMAKE_COMPILER_OPTIONS[@]}"
+cmake -G "${CMAKE_GENERATOR}" .. "-DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}" "${CMAKE_OPTIONS[@]}"
 cmake --build . --config "${CMAKE_BUILD_TYPE}"
 cmake "-DCMAKE_INSTALL_PREFIX=../${INSTALL_DIR}" "-DBUILD_TYPE=${CMAKE_BUILD_TYPE}" -P cmake_install.cmake
 popd
