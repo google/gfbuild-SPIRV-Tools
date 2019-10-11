@@ -27,14 +27,14 @@ CMAKE_OPTIONS=("-DCMAKE_OSX_ARCHITECTURES=x86_64")
 
 case "$(uname)" in
 "Linux")
-  GITHUB_RELEASE_TOOL_ARCH="linux_amd64"
+  GH_RELEASE_TOOL_ARCH="linux_amd64"
   NINJA_OS="linux"
   BUILD_PLATFORM="Linux_x64"
   PYTHON="python3"
   ;;
 
 "Darwin")
-  GITHUB_RELEASE_TOOL_ARCH="darwin_amd64"
+  GH_RELEASE_TOOL_ARCH="darwin_amd64"
   NINJA_OS="mac"
   BUILD_PLATFORM="Mac_x64"
   PYTHON="python3"
@@ -42,7 +42,7 @@ case "$(uname)" in
   ;;
 
 "MINGW"*)
-  GITHUB_RELEASE_TOOL_ARCH="windows_amd64"
+  GH_RELEASE_TOOL_ARCH="windows_amd64"
   NINJA_OS="win"
   BUILD_PLATFORM="Windows_x64"
   PYTHON="python"
@@ -63,9 +63,9 @@ mkdir "${HOME}/bin"
 pushd "${HOME}/bin"
 
 # Install github-release.
-GITHUB_RELEASE_TOOL_USER="c4milo"
-GITHUB_RELEASE_TOOL_VERSION="v1.1.0"
-curl -fsSL -o github-release.tar.gz "https://github.com/${GITHUB_RELEASE_TOOL_USER}/github-release/releases/download/${GITHUB_RELEASE_TOOL_VERSION}/github-release_${GITHUB_RELEASE_TOOL_VERSION}_${GITHUB_RELEASE_TOOL_ARCH}.tar.gz"
+GH_RELEASE_TOOL_USER="c4milo"
+GH_RELEASE_TOOL_VERSION="v1.1.0"
+curl -fsSL -o github-release.tar.gz "https://github.com/${GH_RELEASE_TOOL_USER}/github-release/releases/download/${GH_RELEASE_TOOL_VERSION}/github-release_${GH_RELEASE_TOOL_VERSION}_${GH_RELEASE_TOOL_ARCH}.tar.gz"
 tar xf github-release.tar.gz
 
 # Install ninja.
@@ -98,17 +98,17 @@ git checkout v3.7.1
 popd
 
 CMAKE_OPTIONS+=("-DSPIRV_BUILD_FUZZER=ON")
-GITHUB_USER="google"
-GITHUB_REPO="gfbuild-SPIRV-Tools"
+GH_USER="google"
+GH_REPO="gfbuild-SPIRV-Tools"
 
 CMAKE_GENERATOR="Ninja"
 CMAKE_BUILD_TYPE="${CONFIG}"
 BUILD_SHA="${GITHUB_SHA}"
-GROUP_DOTS="github.${GITHUB_USER}"
-GROUP_SLASHES="github/${GITHUB_USER}"
-ARTIFACT="${GITHUB_REPO}"
+GROUP_DOTS="github.${GH_USER}"
+GROUP_SLASHES="github/${GH_USER}"
+ARTIFACT="${GH_REPO}"
 VERSION="${BUILD_SHA}"
-POM_FILE="${GITHUB_REPO}-${VERSION}.pom"
+POM_FILE="${GH_REPO}-${VERSION}.pom"
 TAG="${GROUP_SLASHES}/${ARTIFACT}/${VERSION}"
 CLASSIFIER="${BUILD_PLATFORM}_${CMAKE_BUILD_TYPE}"
 INSTALL_DIR="${ARTIFACT}-${VERSION}-${CLASSIFIER}"
@@ -151,14 +151,14 @@ if test "${GITHUB_REF}" != "refs/heads/master"; then
 fi
 
 github-release \
-  "${GITHUB_USER}/${GITHUB_REPO}" \
+  "${GH_USER}/${GH_REPO}" \
   "${TAG}" \
   "${COMMIT_ID}" \
   "${DESCRIPTION}" \
   "${INSTALL_DIR}.zip"
 
 github-release \
-  "${GITHUB_USER}/${GITHUB_REPO}" \
+  "${GH_USER}/${GH_REPO}" \
   "${TAG}" \
   "${COMMIT_ID}" \
   "${DESCRIPTION}" \
@@ -167,14 +167,14 @@ github-release \
 # Don't fail if pom cannot be uploaded, as it might already be there.
 
 github-release \
-  "${GITHUB_USER}/${GITHUB_REPO}" \
+  "${GH_USER}/${GH_REPO}" \
   "${TAG}" \
   "${COMMIT_ID}" \
   "${DESCRIPTION}" \
   "${POM_FILE}" || true
 
 github-release \
-  "${GITHUB_USER}/${GITHUB_REPO}" \
+  "${GH_USER}/${GH_REPO}" \
   "${TAG}" \
   "${COMMIT_ID}" \
   "${DESCRIPTION}" \
