@@ -103,15 +103,14 @@ GH_REPO="gfbuild-SPIRV-Tools"
 
 CMAKE_GENERATOR="Ninja"
 CMAKE_BUILD_TYPE="${CONFIG}"
-BUILD_SHA="${GITHUB_SHA}"
+BUILD_REPO_SHA="${GITHUB_SHA}"
 GROUP_DOTS="github.${GH_USER}"
 GROUP_SLASHES="github/${GH_USER}"
 ARTIFACT="${GH_REPO}"
-VERSION="${BUILD_SHA}"
-POM_FILE="${GH_REPO}-${VERSION}.pom"
-TAG="${GROUP_SLASHES}/${ARTIFACT}/${VERSION}"
+POM_FILE="${GH_REPO}-${BUILD_REPO_SHA}.pom"
+TAG="${GROUP_SLASHES}/${ARTIFACT}/${BUILD_REPO_SHA}"
 CLASSIFIER="${BUILD_PLATFORM}_${CMAKE_BUILD_TYPE}"
-INSTALL_DIR="${ARTIFACT}-${VERSION}-${CLASSIFIER}"
+INSTALL_DIR="${ARTIFACT}-${BUILD_REPO_SHA}-${CLASSIFIER}"
 
 
 BUILD_DIR="b_${CMAKE_BUILD_TYPE}"
@@ -126,7 +125,7 @@ popd
 
 
 for f in "${INSTALL_DIR}/bin/"*; do
-  echo "${BUILD_SHA}">"${f}.build-version"
+  echo "${BUILD_REPO_SHA}">"${f}.build-version"
   cp ../COMMIT_ID "${f}.version"
 done
 
@@ -138,7 +137,7 @@ popd
 sha1sum "${INSTALL_DIR}.zip" >"${INSTALL_DIR}.zip.sha1"
 
 # POM file.
-sed -e "s/@GROUP@/${GROUP_DOTS}/g" -e "s/@ARTIFACT@/${ARTIFACT}/g" -e "s/@VERSION@/${VERSION}/g" "../fake_pom.xml" >"${POM_FILE}"
+sed -e "s/@GROUP@/${GROUP_DOTS}/g" -e "s/@ARTIFACT@/${ARTIFACT}/g" -e "s/@VERSION@/${BUILD_REPO_SHA}/g" "../fake_pom.xml" >"${POM_FILE}"
 
 sha1sum "${POM_FILE}" >"${POM_FILE}.sha1"
 
@@ -153,14 +152,14 @@ fi
 github-release \
   "${GH_USER}/${GH_REPO}" \
   "${TAG}" \
-  "${COMMIT_ID}" \
+  "${BUILD_REPO_SHA}" \
   "${DESCRIPTION}" \
   "${INSTALL_DIR}.zip"
 
 github-release \
   "${GH_USER}/${GH_REPO}" \
   "${TAG}" \
-  "${COMMIT_ID}" \
+  "${BUILD_REPO_SHA}" \
   "${DESCRIPTION}" \
   "${INSTALL_DIR}.zip.sha1"
 
@@ -169,13 +168,13 @@ github-release \
 github-release \
   "${GH_USER}/${GH_REPO}" \
   "${TAG}" \
-  "${COMMIT_ID}" \
+  "${BUILD_REPO_SHA}" \
   "${DESCRIPTION}" \
   "${POM_FILE}" || true
 
 github-release \
   "${GH_USER}/${GH_REPO}" \
   "${TAG}" \
-  "${COMMIT_ID}" \
+  "${BUILD_REPO_SHA}" \
   "${DESCRIPTION}" \
   "${POM_FILE}.sha1" || true
