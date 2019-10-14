@@ -20,6 +20,8 @@ set -u
 
 WORK="$(pwd)"
 
+set +x
+
 # We do not use the GITHUB_TOKEN provided by GitHub Actions.
 # We cannot set enviroment variables or secrets that start with GITHUB_ from .yml files,
 # but the github-release tool requires GITHUB_TOKEN, so we set it here.
@@ -32,6 +34,7 @@ git config --global credential.helper store
 
 echo "https://graphicsfuzz-github-bot:${GITHUB_TOKEN}@github.com" >~/.git-credentials
 
+set -x
 exit 0
 
 uname
