@@ -20,23 +20,6 @@ set -u
 
 WORK="$(pwd)"
 
-set +x
-
-# We do not use the GITHUB_TOKEN provided by GitHub Actions.
-# We cannot set enviroment variables or secrets that start with GITHUB_ from .yml files,
-# but the github-release tool requires GITHUB_TOKEN, so we set it here.
-export GITHUB_TOKEN="${GH_TOKEN}"
-
-# Set git user and credentials.
-git config --global user.name "GraphicsFuzz GitHub Bot"
-git config --global user.email "graphicsfuzz-github-bot@google.com"
-git config --global credential.helper store
-
-echo "https://graphicsfuzz-github-bot:${GITHUB_TOKEN}@github.com" >~/.git-credentials
-
-set -x
-exit 0
-
 uname
 
 # Old bash versions can't expand empty arrays, so we always include at least this option.
@@ -170,6 +153,11 @@ DESCRIPTION="$(echo -e "Automated build for ${CLONE_DIR} version ${COMMIT_ID}.\n
 if test "${GITHUB_REF}" != "refs/heads/master"; then
   exit 0
 fi
+
+# We do not use the GITHUB_TOKEN provided by GitHub Actions.
+# We cannot set enviroment variables or secrets that start with GITHUB_ in .yml files,
+# but the github-release tool requires GITHUB_TOKEN, so we set it here.
+export GITHUB_TOKEN="${GH_TOKEN}"
 
 github-release \
   "${GH_USER}/${GH_REPO}" \
