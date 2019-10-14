@@ -20,6 +20,20 @@ set -u
 
 WORK="$(pwd)"
 
+# We do not use the GITHUB_TOKEN provided by GitHub Actions.
+# We cannot set enviroment variables or secrets that start with GITHUB_ from .yml files,
+# but the github-release tool requires GITHUB_TOKEN, so we set it here.
+export GITHUB_TOKEN="${GH_TOKEN}"
+
+# Set git user and credentials.
+git config --global user.name "GraphicsFuzz GitHub Bot"
+git config --global user.email "graphicsfuzz-github-bot@google.com"
+git config --global credential.helper store
+
+printf 'https://graphicsfuzz-github-bot:' >~/.git-credentials
+printenv GITHUB_TOKEN | tr -d '\n' >>~/.git-credentials
+printf '@github.com\n' >>~/.git-credentials
+
 uname
 
 # Old bash versions can't expand empty arrays, so we always include at least this option.
@@ -58,7 +72,7 @@ esac
 
 export PATH="${HOME}/bin:$PATH"
 
-mkdir "${HOME}/bin"
+mkdir -p "${HOME}/bin"
 
 pushd "${HOME}/bin"
 
