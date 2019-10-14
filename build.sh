@@ -30,9 +30,9 @@ git config --global user.name "GraphicsFuzz GitHub Bot"
 git config --global user.email "graphicsfuzz-github-bot@google.com"
 git config --global credential.helper store
 
-printf 'https://graphicsfuzz-github-bot:' >~/.git-credentials
-printenv GITHUB_TOKEN | tr -d '\n' >>~/.git-credentials
-printf '@github.com\n' >>~/.git-credentials
+echo "https://graphicsfuzz-github-bot:${GITHUB_TOKEN}@github.com" >~/.git-credentials
+
+exit 0
 
 uname
 
