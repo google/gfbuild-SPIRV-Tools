@@ -25,7 +25,7 @@ jobs:
           - macOS-10.14
         config:
           - Debug
-          # - Release
+          - Release
     runs-on: ${{ matrix.os }}
     env:
       CONFIG: ${{ matrix.config }}
