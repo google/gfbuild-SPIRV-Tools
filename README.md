@@ -1,7 +1,7 @@
 # gfbuild-SPIRV-Tools
 
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
-[![Build Status](https://github.com/google/gfbuild-SPIRV-Tools/workflows/build/badge.svg)](https://github.com/google/gfbuild-SPIRV-Tools/actions)
+[![Build Status](https://github.com/google/gfbuild-SPIRV-Tools/workflows/.github/workflows/build.yml/badge.svg)](https://github.com/google/gfbuild-SPIRV-Tools/actions)
 
 
 ## gfbuild-SPIRV-Tools is a set of scripts for building [SPIRV-Tools](https://github.com/KhronosGroup/SPIRV-Tools) for the GraphicsFuzz project
