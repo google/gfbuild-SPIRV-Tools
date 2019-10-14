@@ -145,8 +145,8 @@ for f in "${INSTALL_DIR}/bin/"*; do
 done
 
 # Add licenses file.
-cp third_party/OPEN_SOURCE_LICENSES.TXT "${INSTALL_DIR}/"
-cp third_party/OPEN_SOURCE_LICENSES.TXT .
+cp ../third_party/OPEN_SOURCE_LICENSES.TXT "${INSTALL_DIR}/"
+cp ../third_party/OPEN_SOURCE_LICENSES.TXT ./
 
 # zip file.
 pushd "${INSTALL_DIR}"
