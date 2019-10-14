@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+# -*- coding: utf-8 -*-
 
 # Copyright 2019 Google LLC
 #
@@ -14,18 +14,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-set -x
-set -e
-set -u
+import re
 
-cd "${CLONE_DIR}"
-
-BUILD_DIR="b"
-
-mkdir -p "${BUILD_DIR}"
-cd "${BUILD_DIR}"
-cmake -G "${CMAKE_GENERATOR}" .. "-DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}" -DCMAKE_OSX_ARCHITECTURES=x86_64 ${CMAKE_OPTIONS}
-cmake --build . --config "${CMAKE_BUILD_TYPE}"
-cmake "-DCMAKE_INSTALL_PREFIX=../${INSTALL_DIR}" "-DBUILD_TYPE=${CMAKE_BUILD_TYPE}" -P cmake_install.cmake
-cd ..
-find "${INSTALL_DIR}"
+text = open(0).read()
+print(re.search("'spirv_headers_revision'.*:.*'(.*)'", text).group(1))
