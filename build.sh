@@ -130,6 +130,10 @@ for f in "${INSTALL_DIR}/bin/"*; do
   cp ../COMMIT_ID "${f}.version"
 done
 
+# Add licenses file.
+cp third_party/OPEN_SOURCE_LICENSES.TXT "${INSTALL_DIR}/"
+cp third_party/OPEN_SOURCE_LICENSES.TXT .
+
 # zip file.
 pushd "${INSTALL_DIR}"
 zip -r "../${INSTALL_DIR}.zip" ./*
@@ -179,3 +183,12 @@ github-release \
   "${BUILD_REPO_SHA}" \
   "${DESCRIPTION}" \
   "${POM_FILE}.sha1" || true
+
+# Don't fail if OPEN_SOURCE_LICENSES.TXT cannot be uploaded, as it might already be there.
+
+github-release \
+  "${GH_USER}/${GH_REPO}" \
+  "${TAG}" \
+  "${BUILD_REPO_SHA}" \
+  "${DESCRIPTION}" \
+  "OPEN_SOURCE_LICENSES.TXT" || true
