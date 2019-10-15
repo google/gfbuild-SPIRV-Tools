@@ -29,6 +29,8 @@ BUILD_REPO_NAME="gfbuild-SPIRV-Tools"
 EXPECTED_NUM_ASSETS="15"
 ###### END EDIT ######
 
+git checkout master
+
 COMMIT_ID="$(cat "${WORK}/COMMIT_ID")"
 
 ARTIFACT="${BUILD_REPO_NAME}"
