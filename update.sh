@@ -36,7 +36,7 @@ ARTIFACT_VERSION="${COMMIT_ID}"
 GROUP_SLASHES="github/${BUILD_REPO_ORG}"
 TAG="${GROUP_SLASHES}/${ARTIFACT}/${ARTIFACT_VERSION}"
 
-NUM_ASSETS=$(curl -fsSL "https://api.github.com/repos/${GH_USER}/${GH_REPO}/releases/tags/${TAG}" | grep -c '"uploader": {')
+NUM_ASSETS=$(curl -fsSL "https://api.github.com/repos/${BUILD_REPO_ORG}/${BUILD_REPO_NAME}/releases/tags/${TAG}" | grep -c '"uploader": {')
 
 if test "${NUM_ASSETS}" != "${EXPECTED_NUM_ASSETS}"; then
   echo "Stopping because of previous release: expected ${EXPECTED_NUM_ASSETS} assets but there were ${NUM_ASSETS}."
