@@ -15,7 +15,7 @@
 
 on:
   schedule:
-    - cron:  '23 16 * * *'
+    - cron:  '20 17 * * *'
 
 jobs:
   update:
