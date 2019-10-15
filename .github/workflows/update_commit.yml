@@ -14,10 +14,8 @@
 
 
 on:
-  push:
-    branches:
-      - '**'
-      - '!update'
+  schedule:
+    - cron:  '* 22 * * *'
 
 jobs:
   update:

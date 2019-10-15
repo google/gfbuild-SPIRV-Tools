@@ -16,8 +16,10 @@
 on:
   push:
     branches:
-      - '**'
-      - '!update'
+      - 'master'
+      - 'test*'
+    paths:
+      - 'COMMIT_ID'
 
 jobs:
   build:
