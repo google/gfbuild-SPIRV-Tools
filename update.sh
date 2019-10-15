@@ -66,29 +66,7 @@ fi
 
 cd "${WORK}"
 
-git branch -f update
-git checkout update
 echo "${NEW_COMMIT_ID}">COMMIT_ID
 git add COMMIT_ID
 git commit -m "Updated COMMIT_ID to ${NEW_COMMIT_ID}"
-git push --force --set-upstream origin update
-
-# Wait for the CLA check to complete.
-sleep 20
-
-# Set master to be at update.
-git checkout master
-git branch -f temp
-git reset --hard update
-
-# Force push update to just be a dummy commit off master.
-git checkout update
-git reset --hard temp
-touch EMPTY
-git add EMPTY
-git commit -m "Dummy commit"
-git push --force
-
-# Push master.
-git checkout master
 git push
