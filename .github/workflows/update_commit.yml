@@ -14,27 +14,13 @@
 
 
 on:
-  push:
-    branches:
-      - 'master'
-      - 'test*'
-    paths:
-      - 'COMMIT_ID'
+  schedule:
+    - cron:  '* 22 * * *'
 
 jobs:
-  build:
-    strategy:
-      matrix:
-        os:
-          - ubuntu-16.04
-          - windows-2016
-          - macOS-10.14
-        config:
-          - Debug
-          - Release
-    runs-on: ${{ matrix.os }}
+  update:
+    runs-on: ubuntu-16.04
     env:
-      CONFIG: ${{ matrix.config }}
       GH_TOKEN: ${{ secrets.GH_TOKEN }}
     steps:
       - name: checkout
@@ -42,16 +28,7 @@ jobs:
           git clone https://github.com/${GITHUB_REPOSITORY}.git .
           git checkout $GITHUB_SHA
         shell: bash
-      - name: build_step_nix
+      - name: update_step
         run: |
-          ./build.sh
+          ./update.sh
         shell: bash
-        if: |
-          !startsWith(matrix.os, 'windows')
-      - name: build_step_windows
-        run: |
-          call "C:\Program Files (x86)\Microsoft Visual Studio\2017\Enterprise\VC\Auxiliary\Build\vcvarsall.bat" x64
-          "C:\Program Files\Git\bin\bash.EXE" --noprofile --norc -e -o pipefail build.sh
-        shell: cmd
-        if: |
-          startsWith(matrix.os, 'windows')

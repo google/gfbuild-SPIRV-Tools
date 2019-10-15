@@ -20,10 +20,10 @@ set -u
 
 WORK="$(pwd)"
 
-uname
-
 # Old bash versions can't expand empty arrays, so we always include at least this option.
 CMAKE_OPTIONS=("-DCMAKE_OSX_ARCHITECTURES=x86_64")
+
+uname
 
 case "$(uname)" in
 "Linux")
@@ -56,6 +56,29 @@ case "$(uname)" in
   ;;
 esac
 
+###### START EDIT ######
+TARGET_REPO_ORG="KhronosGroup"
+TARGET_REPO_NAME="SPIRV-Tools"
+BUILD_REPO_ORG="google"
+BUILD_REPO_NAME="gfbuild-SPIRV-Tools"
+###### END EDIT ######
+
+COMMIT_ID="$(cat "${WORK}/COMMIT_ID")"
+
+ARTIFACT="${BUILD_REPO_NAME}"
+ARTIFACT_VERSION="${COMMIT_ID}"
+GROUP_DOTS="github.${BUILD_REPO_ORG}"
+GROUP_SLASHES="github/${BUILD_REPO_ORG}"
+TAG="${GROUP_SLASHES}/${ARTIFACT}/${ARTIFACT_VERSION}"
+
+BUILD_REPO_SHA="${GITHUB_SHA}"
+CLASSIFIER="${BUILD_PLATFORM}_${CONFIG}"
+POM_FILE="${BUILD_REPO_NAME}-${ARTIFACT_VERSION}.pom"
+INSTALL_DIR="${ARTIFACT}-${ARTIFACT_VERSION}-${CLASSIFIER}"
+
+GH_RELEASE_TOOL_USER="c4milo"
+GH_RELEASE_TOOL_VERSION="v1.1.0"
+
 export PATH="${HOME}/bin:$PATH"
 
 mkdir -p "${HOME}/bin"
@@ -63,8 +86,6 @@ mkdir -p "${HOME}/bin"
 pushd "${HOME}/bin"
 
 # Install github-release.
-GH_RELEASE_TOOL_USER="c4milo"
-GH_RELEASE_TOOL_VERSION="v1.1.0"
 curl -fsSL -o github-release.tar.gz "https://github.com/${GH_RELEASE_TOOL_USER}/github-release/releases/download/${GH_RELEASE_TOOL_VERSION}/github-release_${GH_RELEASE_TOOL_VERSION}_${GH_RELEASE_TOOL_ARCH}.tar.gz"
 tar xf github-release.tar.gz
 
@@ -76,12 +97,13 @@ ls
 
 popd
 
+###### START EDIT ######
+CMAKE_GENERATOR="Ninja"
+CMAKE_BUILD_TYPE="${CONFIG}"
+CMAKE_OPTIONS+=("-DSPIRV_BUILD_FUZZER=ON")
 
-COMMIT_ID="$(cat "${WORK}/COMMIT_ID")"
-CLONE_DIR="SPIRV-Tools"
-
-git clone https://github.com/KhronosGroup/SPIRV-Tools.git "${CLONE_DIR}"
-cd "${CLONE_DIR}"
+git clone https://github.com/${TARGET_REPO_ORG}/${TARGET_REPO_NAME}.git "${TARGET_REPO_NAME}"
+cd "${TARGET_REPO_NAME}"
 git checkout "${COMMIT_ID}"
 
 # Get headers version from the DEPS file.
@@ -96,25 +118,10 @@ git clone https://github.com/protocolbuffers/protobuf external/protobuf
 pushd external/protobuf
 git checkout v3.7.1
 popd
+###### END EDIT ######
 
-CMAKE_OPTIONS+=("-DSPIRV_BUILD_FUZZER=ON")
-GH_USER="google"
-GH_REPO="gfbuild-SPIRV-Tools"
-
-CMAKE_GENERATOR="Ninja"
-CMAKE_BUILD_TYPE="${CONFIG}"
-BUILD_REPO_SHA="${GITHUB_SHA}"
-GROUP_DOTS="github.${GH_USER}"
-GROUP_SLASHES="github/${GH_USER}"
-ARTIFACT="${GH_REPO}"
-ARTIFACT_VERSION="${COMMIT_ID}"
-POM_FILE="${GH_REPO}-${ARTIFACT_VERSION}.pom"
-TAG="${GROUP_SLASHES}/${ARTIFACT}/${ARTIFACT_VERSION}"
-CLASSIFIER="${BUILD_PLATFORM}_${CMAKE_BUILD_TYPE}"
-INSTALL_DIR="${ARTIFACT}-${ARTIFACT_VERSION}-${CLASSIFIER}"
-
-
-BUILD_DIR="b_${CMAKE_BUILD_TYPE}"
+###### BEGIN BUILD ######
+BUILD_DIR="b_${CONFIG}"
 
 mkdir -p "${BUILD_DIR}"
 pushd "${BUILD_DIR}"
@@ -123,16 +130,18 @@ cmake -G "${CMAKE_GENERATOR}" .. "-DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}" "${CMA
 cmake --build . --config "${CMAKE_BUILD_TYPE}"
 cmake "-DCMAKE_INSTALL_PREFIX=../${INSTALL_DIR}" "-DBUILD_TYPE=${CMAKE_BUILD_TYPE}" -P cmake_install.cmake
 popd
+###### END BUILD ######
 
-
+###### START EDIT ######
 for f in "${INSTALL_DIR}/bin/"*; do
   echo "${BUILD_REPO_SHA}">"${f}.build-version"
-  cp ../COMMIT_ID "${f}.version"
+  cp "${WORK}/COMMIT_ID" "${f}.version"
 done
+###### END EDIT ######
 
 # Add licenses file.
-cp ../third_party/OPEN_SOURCE_LICENSES.TXT "${INSTALL_DIR}/"
-cp ../third_party/OPEN_SOURCE_LICENSES.TXT ./
+cp "${WORK}/third_party/OPEN_SOURCE_LICENSES.TXT" "${INSTALL_DIR}/"
+cp "${WORK}/third_party/OPEN_SOURCE_LICENSES.TXT" ./
 
 # zip file.
 pushd "${INSTALL_DIR}"
@@ -146,7 +155,7 @@ sed -e "s/@GROUP@/${GROUP_DOTS}/g" -e "s/@ARTIFACT@/${ARTIFACT}/g" -e "s/@VERSIO
 
 sha1sum "${POM_FILE}" >"${POM_FILE}.sha1"
 
-DESCRIPTION="$(echo -e "Automated build for ${CLONE_DIR} version ${COMMIT_ID}.\n$(git log --graph -n 3 --abbrev-commit --pretty='format:%h - %s <%an>')")"
+DESCRIPTION="$(echo -e "Automated build for ${TARGET_REPO_NAME} version ${COMMIT_ID}.\n$(git log --graph -n 3 --abbrev-commit --pretty='format:%h - %s <%an>')")"
 
 # Only release from master branch commits.
 # shellcheck disable=SC2153
@@ -160,14 +169,14 @@ fi
 export GITHUB_TOKEN="${GH_TOKEN}"
 
 github-release \
-  "${GH_USER}/${GH_REPO}" \
+  "${BUILD_REPO_ORG}/${BUILD_REPO_NAME}" \
   "${TAG}" \
   "${BUILD_REPO_SHA}" \
   "${DESCRIPTION}" \
   "${INSTALL_DIR}.zip"
 
 github-release \
-  "${GH_USER}/${GH_REPO}" \
+  "${BUILD_REPO_ORG}/${BUILD_REPO_NAME}" \
   "${TAG}" \
   "${BUILD_REPO_SHA}" \
   "${DESCRIPTION}" \
@@ -176,14 +185,14 @@ github-release \
 # Don't fail if pom cannot be uploaded, as it might already be there.
 
 github-release \
-  "${GH_USER}/${GH_REPO}" \
+  "${BUILD_REPO_ORG}/${BUILD_REPO_NAME}" \
   "${TAG}" \
   "${BUILD_REPO_SHA}" \
   "${DESCRIPTION}" \
   "${POM_FILE}" || true
 
 github-release \
-  "${GH_USER}/${GH_REPO}" \
+  "${BUILD_REPO_ORG}/${BUILD_REPO_NAME}" \
   "${TAG}" \
   "${BUILD_REPO_SHA}" \
   "${DESCRIPTION}" \
@@ -192,7 +201,7 @@ github-release \
 # Don't fail if OPEN_SOURCE_LICENSES.TXT cannot be uploaded, as it might already be there.
 
 github-release \
-  "${GH_USER}/${GH_REPO}" \
+  "${BUILD_REPO_ORG}/${BUILD_REPO_NAME}" \
   "${TAG}" \
   "${BUILD_REPO_SHA}" \
   "${DESCRIPTION}" \
