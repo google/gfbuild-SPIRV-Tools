@@ -36,7 +36,7 @@ ARTIFACT_VERSION="${COMMIT_ID}"
 GROUP_SLASHES="github/${BUILD_REPO_ORG}"
 TAG="${GROUP_SLASHES}/${ARTIFACT}/${ARTIFACT_VERSION}"
 
-NUM_ASSETS=$(curl -fsSL "https://api.github.com/repos/${GH_USER}/${GH_REPO}/releases/tags/${TAG}" | grep -c '"uploader": {')
+NUM_ASSETS=$(curl -fsSL "https://api.github.com/repos/${BUILD_REPO_ORG}/${BUILD_REPO_NAME}/releases/tags/${TAG}" | grep -c '"uploader": {')
 
 if test "${NUM_ASSETS}" != "${EXPECTED_NUM_ASSETS}"; then
   echo "Stopping because of previous release: expected ${EXPECTED_NUM_ASSETS} assets but there were ${NUM_ASSETS}."
@@ -76,4 +76,16 @@ git push --force --set-upstream origin update
 # Wait for the CLA check to complete.
 sleep 20
 
-git push origin update:master
+# Set master to be at update.
+git checkout master
+git reset --hard update
+
+# Checkout update and add one more dummy commit that we won't ever merge.
+git checkout update
+touch EMPTY
+git add EMPTY
+git commit -m "Dummy commit"
+
+# Push master.
+git checkout master
+git push
