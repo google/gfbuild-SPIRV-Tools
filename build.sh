@@ -139,9 +139,12 @@ for f in "${INSTALL_DIR}/bin/"*; do
 done
 ###### END EDIT ######
 
+GRAPHICSFUZZ_COMMIT_SHA="b82cf495af1dea454218a332b88d2d309657594d"
+OPEN_SOURCE_LICENSES_URL="https://github.com/google/gfbuild-graphicsfuzz/releases/download/github/google/gfbuild-graphicsfuzz/${GRAPHICSFUZZ_COMMIT_SHA}/OPEN_SOURCE_LICENSES.TXT"
+
 # Add licenses file.
-cp "${WORK}/third_party/OPEN_SOURCE_LICENSES.TXT" "${INSTALL_DIR}/"
-cp "${WORK}/third_party/OPEN_SOURCE_LICENSES.TXT" ./
+curl -fsSL -o OPEN_SOURCE_LICENSES.TXT "${OPEN_SOURCE_LICENSES_URL}"
+cp OPEN_SOURCE_LICENSES.TXT "${INSTALL_DIR}/"
 
 # zip file.
 pushd "${INSTALL_DIR}"
