@@ -137,6 +137,8 @@ for f in "${INSTALL_DIR}/bin/"*; do
   echo "${BUILD_REPO_SHA}">"${f}.build-version"
   cp "${WORK}/COMMIT_ID" "${f}.version"
 done
+rm -rf "${INSTALL_DIR:?}/lib"
+rm -rf "${INSTALL_DIR:?}/include"
 ###### END EDIT ######
 
 GRAPHICSFUZZ_COMMIT_SHA="b82cf495af1dea454218a332b88d2d309657594d"
