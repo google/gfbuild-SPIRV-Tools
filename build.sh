@@ -133,8 +133,11 @@ popd
 ###### END BUILD ######
 
 ###### START EDIT ######
-rm -rf "${INSTALL_DIR:?}/lib"
-rm -rf "${INSTALL_DIR:?}/include"
+
+# We just want the bin directory.
+mv "${INSTALL_DIR}" "${INSTALL_DIR}_old"
+mkdir -p "${INSTALL_DIR}"
+cp -r "${INSTALL_DIR}_old/bin" "${INSTALL_DIR}"
 
 case "$(uname)" in
 "Linux")
@@ -144,6 +147,9 @@ case "$(uname)" in
   ;;
 
 "MINGW"*)
+  # For some reason, there is a .dll in bin/ on Windows.
+  rm -rf "${INSTALL_DIR:?}/bin/"*.dll
+
   "${PYTHON}" "${WORK}/add_pdbs.py" "${BUILD_DIR}" "${INSTALL_DIR}"
   ;;
 
