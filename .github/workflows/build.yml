@@ -19,7 +19,7 @@ on:
       - 'master'
       - 'test*'
     paths:
-      #- 'COMMIT_ID'
+      - 'COMMIT_ID'
 
 jobs:
   build:
@@ -31,7 +31,7 @@ jobs:
           - macOS-latest
         config:
           - Debug
-          #- Release
+          - Release
     runs-on: ${{ matrix.os }}
     env:
       CONFIG: ${{ matrix.config }}
