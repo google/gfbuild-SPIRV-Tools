@@ -23,6 +23,8 @@ WORK="$(pwd)"
 # Old bash versions can't expand empty arrays, so we always include at least this option.
 CMAKE_OPTIONS=("-DCMAKE_OSX_ARCHITECTURES=x86_64")
 
+help | head
+
 uname
 
 case "$(uname)" in
@@ -41,7 +43,7 @@ case "$(uname)" in
   brew install md5sha1sum
   ;;
 
-"MINGW"*)
+"MINGW"*|"MSYS_NT"*)
   GH_RELEASE_TOOL_ARCH="windows_amd64"
   NINJA_OS="win"
   BUILD_PLATFORM="Windows_x64"
