@@ -148,7 +148,7 @@ case "$(uname)" in
 "Darwin")
   ;;
 
-"MINGW"*)
+"MINGW"*|"MSYS_NT"*)
   # For some reason, there is a .dll in bin/ on Windows.
   rm -rf "${INSTALL_DIR:?}/bin/"*.dll
 
