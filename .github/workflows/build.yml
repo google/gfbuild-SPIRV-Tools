@@ -20,6 +20,7 @@ on:
       - 'test*'
     paths:
       - 'COMMIT_ID'
+  workflow_dispatch:
 
 jobs:
   build:
