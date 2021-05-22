@@ -26,9 +26,10 @@ jobs:
     steps:
 
       - name: checkout
-        uses: actions/checkout@v2
-
+        run: |
+          git clone https://github.com/${GITHUB_REPOSITORY}.git .
+          git checkout $GITHUB_SHA
+        shell: bash
       - name: update_step
         run: |
           ./update.sh
-        shell: bash
