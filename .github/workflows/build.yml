@@ -15,11 +15,11 @@
 
 on:
   push:
-    branches:
-      - 'master'
-      - 'test*'
-    paths:
-      - 'COMMIT_ID'
+    # branches:
+    #   - 'master'
+    #   - 'test*'
+    # paths:
+    #   - 'COMMIT_ID'
   workflow_dispatch:
 
 jobs:
