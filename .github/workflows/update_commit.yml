@@ -20,15 +20,14 @@ on:
 
 jobs:
   update:
-    runs-on: ubuntu-16.04
+    runs-on: ubuntu-18.04
     env:
       GH_TOKEN: ${{ secrets.GH_TOKEN }}
     steps:
+
       - name: checkout
-        run: |
-          git clone https://github.com/${GITHUB_REPOSITORY}.git .
-          git checkout $GITHUB_SHA
-        shell: bash
+        uses: actions/checkout@v2
+
       - name: update_step
         run: |
           ./update.sh
